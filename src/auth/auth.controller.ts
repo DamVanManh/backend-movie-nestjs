@@ -8,6 +8,8 @@ import {
   HttpStatus,
   Post,
   Get,
+  Query,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login-nguoidung.dto';
@@ -15,6 +17,7 @@ import { SignUpDto } from './dto/signup-nguoidung.dto';
 import { ApiResponse } from 'src/common/dtos/response.dto';
 import { NguoiDung, LoaiNguoiDung } from '@prisma/client';
 import { LoginResDto } from './dto/login-nguoidung-res.dto';
+import { LayDanhSachNguoiDungPhanTrangResDto } from './dto/laydanhsachnguoidungphantrang-res.dto copy';
 
 @Controller('QuanLyNguoiDung')
 export class AuthController {
@@ -47,6 +50,20 @@ export class AuthController {
   @HttpCode(200)
   @Get('LayDanhSachNguoiDung')
   async LayDanhSachNguoiDung(): Promise<ApiResponse<NguoiDung[] | null>> {
-    return await this.authService.LayDanhSachNguoiDung();
+    return await this.authService.layDanhSachNguoiDung();
+  }
+
+  @HttpCode(200)
+  @Get('LayDanhSachNguoiDungPhanTrang')
+  async LayDanhSachNguoiDungPhanTrang(
+    @Query('tuKhoa') tuKhoa: string,
+    @Query('soTrang', ParseIntPipe) soTrang: number,
+    @Query('soPhanTuTrenTrang', ParseIntPipe) soPhanTuTrenTrang: number,
+  ): Promise<ApiResponse<LayDanhSachNguoiDungPhanTrangResDto | null>> {
+    return await this.authService.layDanhSachNguoiDungPhanTrang(
+      tuKhoa,
+      soTrang,
+      soPhanTuTrenTrang,
+    );
   }
 }

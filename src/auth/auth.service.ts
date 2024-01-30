@@ -9,6 +9,7 @@ import { ResponseHelper } from 'src/common/helpers/response.helper';
 import { ApiResponse } from 'src/common/dtos/response.dto';
 import { LoaiNguoiDung, NguoiDung } from '@prisma/client';
 import { LoginResDto } from './dto/login-nguoidung-res.dto';
+import { LayDanhSachNguoiDungPhanTrangResDto } from './dto/laydanhsachnguoidungphantrang-res.dto copy';
 
 @Injectable()
 export class AuthService {
@@ -119,9 +120,52 @@ export class AuthService {
     }
   }
 
-  async LayDanhSachNguoiDung(): Promise<ApiResponse<NguoiDung[] | null>> {
+  async layDanhSachNguoiDung(): Promise<ApiResponse<NguoiDung[] | null>> {
     try {
       let data = await this.prismaService.nguoiDung.findMany();
+      return ResponseHelper.success(data);
+    } catch (error) {
+      if (error?.status && error?.status != 500)
+        ResponseHelper.error(error.message, error.status);
+      ResponseHelper.internalError();
+    }
+  }
+
+  async layDanhSachNguoiDungPhanTrang(
+    tuKhoa: string,
+    soTrang: number,
+    soPhanTuTrenTrang: number,
+  ): Promise<ApiResponse<LayDanhSachNguoiDungPhanTrangResDto | null>> {
+    try {
+      let index = (soTrang - 1) * soPhanTuTrenTrang;
+
+      let dataCount = await this.prismaService.nguoiDung.count({
+        where: {
+          hoTen: {
+            contains: tuKhoa,
+          },
+        },
+      });
+      let totalPage = Math.ceil(dataCount / soPhanTuTrenTrang);
+
+      // người dùng filter theo page
+      let nguoiDungs = await this.prismaService.nguoiDung.findMany({
+        skip: index,
+        take: soPhanTuTrenTrang,
+        where: {
+          hoTen: {
+            contains: tuKhoa,
+          },
+        },
+      });
+
+      let data = {
+        currentPage: soTrang,
+        count: soPhanTuTrenTrang,
+        totalPages: totalPage,
+        totalCount: dataCount,
+        items: nguoiDungs,
+      };
       return ResponseHelper.success(data);
     } catch (error) {
       if (error?.status && error?.status != 500)
