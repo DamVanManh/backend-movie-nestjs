@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/database/prisma.service';
 import { ResponseHelper } from 'src/common/helpers/response.helper';
 import { ApiResponse } from 'src/common/dtos/response.dto';
-import { nguoi_dung } from '@prisma/client';
+import { NguoiDung } from '@prisma/client';
 import { CreateLuuanhDto } from './dto/create-luuanh.dto';
 import { DeleteLuuanhDto } from './dto/delete-luuanh.dto';
 
@@ -12,10 +12,10 @@ export class LuuanhService {
   async getInfoLuuHinh(
     idAnh: string,
     nguoiDungId: number,
-  ): Promise<ApiResponse<nguoi_dung | string>> {
+  ): Promise<ApiResponse<NguoiDung | string>> {
     // try {
 
-    //   let data = await this.prismaService.nguoi_dung.findUnique({
+    //   let data = await this.prismaService.NguoiDung.findUnique({
     //     where: {
     //       nguoi_dung_id_hinh_id: {
     //         hinh_id: parseFloat(idAnh),
@@ -35,18 +35,18 @@ export class LuuanhService {
 
   async getHinhAnhDaLuus(
     nguoiDungId: number,
-  ): Promise<ApiResponse<nguoi_dung[] | string | null>> {
+  ): Promise<ApiResponse<NguoiDung[] | string | null>> {
     // try {
 
-    //   let data = await this.prismaService.nguoi_dung.findMany({
+    //   let data = await this.prismaService.NguoiDung.findMany({
     //     where: {
     //       nguoi_dung_id: nguoiDungId
     //     },
     //     include: {
-    //       nguoi_dung: true
+    //       NguoiDung: true
     //     },
     //   })
-    //   let hinhAnhs = data.map(d => ({ ...d.nguoi_dung }))
+    //   let hinhAnhs = data.map(d => ({ ...d.NguoiDung }))
     //   return ResponseHelper.success(hinhAnhs)
     // } catch (error) {
     //   if (error?.status && error?.status != 500)
@@ -60,10 +60,10 @@ export class LuuanhService {
   async luuAnh(
     createLuuanhDto: CreateLuuanhDto,
     nguoiDungId: number,
-  ): Promise<ApiResponse<nguoi_dung | string>> {
+  ): Promise<ApiResponse<NguoiDung | string>> {
     // try {
 
-    //   let currentLuuAnh = await this.prismaService.nguoi_dung.findUnique({
+    //   let currentLuuAnh = await this.prismaService.NguoiDung.findUnique({
     //     where: {
     //       nguoi_dung_id_hinh_id: {
     //         hinh_id: createLuuanhDto.hinh_id,
@@ -81,7 +81,7 @@ export class LuuanhService {
     //     nguoi_dung_id: nguoiDungId,
     //     ngay_luu: new Date()
     //   }
-    //   const newLuuAnh = await this.prismaService.nguoi_dung.create({ data: luuAnh });
+    //   const newLuuAnh = await this.prismaService.NguoiDung.create({ data: luuAnh });
     //   return ResponseHelper.success(newLuuAnh)
     // } catch (error) {
     //   if (error?.status && error?.status != 500)
@@ -98,7 +98,7 @@ export class LuuanhService {
   ): Promise<ApiResponse<string>> {
     // try {
 
-    //   let currentLuuAnh = await this.prismaService.nguoi_dung.findUnique({
+    //   let currentLuuAnh = await this.prismaService.NguoiDung.findUnique({
     //     where: {
     //       nguoi_dung_id_hinh_id: {
     //         hinh_id: deleteLuuanhDto.hinh_id,
@@ -111,7 +111,7 @@ export class LuuanhService {
     //     ResponseHelper.error("Ảnh chưa được lưu")
     //   }
 
-    //   await this.prismaService.nguoi_dung.delete({
+    //   await this.prismaService.NguoiDung.delete({
     //     where: {
     //       nguoi_dung_id_hinh_id: {
     //         hinh_id: deleteLuuanhDto.hinh_id,

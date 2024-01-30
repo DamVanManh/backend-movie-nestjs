@@ -4,7 +4,7 @@ import { Response } from 'express';
 export class ResponseHelper {
   static success<T>(
     data: T,
-    message = 'Success',
+    message = 'Xử lý thành công!',
     status = HttpStatus.OK,
   ): ApiResponse<T> {
     return {

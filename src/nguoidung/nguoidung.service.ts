@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../database/prisma.service';
-import { nguoi_dung } from '@prisma/client';
+import { NguoiDung } from '@prisma/client';
 import { ApiResponse } from 'src/common/dtos/response.dto';
 import { ResponseHelper } from 'src/common/helpers/response.helper';
 import { UpdateNguoiDungDto } from './dto/update-nguoidung.dto';
@@ -10,9 +10,9 @@ export class NguoidungService {
   constructor(private prisma: PrismaService) {}
   async getInfo(
     nguoiDungId: number,
-  ): Promise<ApiResponse<nguoi_dung | string | null>> {
+  ): Promise<ApiResponse<NguoiDung | string | null>> {
     // try {
-    //     let data = await this.prisma.nguoi_dung.findUnique({
+    //     let data = await this.prisma.NguoiDung.findUnique({
     //         where: {
     //             nguoi_dung_id: nguoiDungId
     //         }
@@ -30,9 +30,9 @@ export class NguoidungService {
   async update(
     updateNguoiDungDto: UpdateNguoiDungDto,
     nguoiDungId: number,
-  ): Promise<ApiResponse<nguoi_dung | string | null>> {
+  ): Promise<ApiResponse<NguoiDung | string | null>> {
     // try {
-    //     let currentNguoiDung = await this.prisma.nguoi_dung.findUnique({
+    //     let currentNguoiDung = await this.prisma.NguoiDung.findUnique({
     //         where: {
     //             nguoi_dung_id: nguoiDungId
     //         }
@@ -42,7 +42,7 @@ export class NguoidungService {
     //         ...updateNguoiDungDto,
     //         email: currentNguoiDung.email
     //     }
-    //     let data = await this.prisma.nguoi_dung.update({
+    //     let data = await this.prisma.NguoiDung.update({
     //         data: nguoiDung,
     //         where: {
     //             nguoi_dung_id: nguoiDungId

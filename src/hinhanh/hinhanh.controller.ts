@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { HinhanhService } from './hinhanh.service';
 import { ApiResponse } from 'src/common/dtos/response.dto';
-import { nguoi_dung } from '@prisma/client';
+import { NguoiDung } from '@prisma/client';
 import { AuthGuard } from '@nestjs/passport';
 import { InfoHinhAnhVaNguoiTaoAnh } from './dto/info-hinhanh.sto';
 import { Request } from 'express';
@@ -25,7 +25,7 @@ export class HinhanhController {
 
   @HttpCode(200)
   @Get('all')
-  async getHinhAnhs(): Promise<ApiResponse<nguoi_dung[] | string>> {
+  async getHinhAnhs(): Promise<ApiResponse<NguoiDung[] | string>> {
     return await this.hinhanhService.getHinhAnhs();
   }
 
@@ -33,7 +33,7 @@ export class HinhanhController {
   @Get('name')
   async getHinhAnhByName(
     @Query('q') q: string,
-  ): Promise<ApiResponse<nguoi_dung[] | string>> {
+  ): Promise<ApiResponse<NguoiDung[] | string>> {
     return await this.hinhanhService.getHinhAnhByName(q);
   }
 
@@ -50,8 +50,8 @@ export class HinhanhController {
   @Get('user-id')
   async getHinhAnhsByNguoiDung(
     @Req() req: Request,
-  ): Promise<ApiResponse<nguoi_dung[] | string | null>> {
-    let nguoiDungId = req.user['nguoi_dung_id'];
+  ): Promise<ApiResponse<NguoiDung[] | string | null>> {
+    let nguoiDungId = req.user['NguoiDung_id'];
     return await this.hinhanhService.getHinhAnhsByNguoiDung(nguoiDungId);
   }
 
@@ -61,7 +61,7 @@ export class HinhanhController {
     @Param('hinhId') hinhId: string,
     @Req() req: Request,
   ): Promise<ApiResponse<string>> {
-    let nguoiDungId = req.user['nguoi_dung_id'];
+    let nguoiDungId = req.user['NguoiDung_id'];
     return await this.hinhanhService.xoaAnhbyHinhId(hinhId, nguoiDungId);
   }
 
@@ -70,8 +70,8 @@ export class HinhanhController {
   async create(
     @Body() createBinhluanDto: CreateHinhAnhDto,
     @Req() req: Request,
-  ): Promise<ApiResponse<nguoi_dung | string>> {
-    let nguoiDungId = req.user['nguoi_dung_id'];
+  ): Promise<ApiResponse<NguoiDung | string>> {
+    let nguoiDungId = req.user['NguoiDung_id'];
     return await this.hinhanhService.create(createBinhluanDto, nguoiDungId);
   }
 }

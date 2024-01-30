@@ -13,7 +13,7 @@ import { LuuanhService } from './luuanh.service';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
 import { ApiResponse } from 'src/common/dtos/response.dto';
-import { nguoi_dung } from '@prisma/client';
+import { NguoiDung } from '@prisma/client';
 import { CreateLuuanhDto } from './dto/create-luuanh.dto';
 import { DeleteLuuanhDto } from './dto/delete-luuanh.dto';
 
@@ -27,7 +27,7 @@ export class LuuanhController {
   async getInfoLuuHinh(
     @Param('idAnh') idAnh: string,
     @Req() req: Request,
-  ): Promise<ApiResponse<nguoi_dung | string>> {
+  ): Promise<ApiResponse<NguoiDung | string>> {
     let nguoiDungId = req.user['nguoi_dung_id'];
     return await this.luuanhService.getInfoLuuHinh(idAnh, nguoiDungId);
   }
@@ -36,7 +36,7 @@ export class LuuanhController {
   @Get('')
   async getHinhAnhDaLuus(
     @Req() req: Request,
-  ): Promise<ApiResponse<nguoi_dung[] | string | null>> {
+  ): Promise<ApiResponse<NguoiDung[] | string | null>> {
     let nguoiDungId = req.user['nguoi_dung_id'];
     return await this.luuanhService.getHinhAnhDaLuus(nguoiDungId);
   }
@@ -46,7 +46,7 @@ export class LuuanhController {
   async luuAnh(
     @Body() createLuuanhDto: CreateLuuanhDto,
     @Req() req: Request,
-  ): Promise<ApiResponse<nguoi_dung | string>> {
+  ): Promise<ApiResponse<NguoiDung | string>> {
     let nguoiDungId = req.user['nguoi_dung_id'];
     return await this.luuanhService.luuAnh(createLuuanhDto, nguoiDungId);
   }

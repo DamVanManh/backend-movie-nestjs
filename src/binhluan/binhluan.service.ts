@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { nguoi_dung } from '@prisma/client';
+import { NguoiDung } from '@prisma/client';
 import { ApiResponse } from 'src/common/dtos/response.dto';
 import { ResponseHelper } from 'src/common/helpers/response.helper';
 import { PrismaService } from 'src/database/prisma.service';
@@ -8,10 +8,10 @@ import { CreateBinhluanDto } from './dto/create-binhluan.dto';
 @Injectable()
 export class BinhluanService {
   constructor(private prismaService: PrismaService) {}
-  async getByIdAnh(id: string): Promise<ApiResponse<nguoi_dung[] | string>> {
+  async getByIdAnh(id: string): Promise<ApiResponse<NguoiDung[] | string>> {
     // try {
 
-    //   let data = await this.prismaService.nguoi_dung.findMany({
+    //   let data = await this.prismaService.NguoiDung.findMany({
     //     where: {
     //       hinh_id: parseFloat(id)
     //     }
@@ -33,7 +33,7 @@ export class BinhluanService {
   async binhLuan(
     createBinhluanDto: CreateBinhluanDto,
     nguoiDungId: string,
-  ): Promise<ApiResponse<nguoi_dung | string>> {
+  ): Promise<ApiResponse<NguoiDung | string>> {
     // try {
     //   const hinh = await this.prismaService.hinh_anh.findUnique({
     //     where: {
@@ -46,12 +46,12 @@ export class BinhluanService {
     //   }
 
     //   let binhLuan = {
-    //     ngay_nguoi_dung: new Date(),
+    //     ngay_NguoiDung: new Date(),
     //     noi_dung: createBinhluanDto.noiDung,
-    //     nguoi_dung_id: parseFloat(nguoiDungId),
+    //     NguoiDung_id: parseFloat(nguoiDungId),
     //     hinh_id: createBinhluanDto.hinhId,
     //   }
-    //   const newBinhLuan = await this.prismaService.nguoi_dung.create({ data: binhLuan });
+    //   const newBinhLuan = await this.prismaService.NguoiDung.create({ data: binhLuan });
     //   return ResponseHelper.success(newBinhLuan)
     // } catch (error) {
     //   if (error?.status && error?.status != 500)

@@ -7,7 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import { SignUpDto } from './dto/signup-nguoidung.dto';
 import { ResponseHelper } from 'src/common/helpers/response.helper';
 import { ApiResponse } from 'src/common/dtos/response.dto';
-import { nguoi_dung } from '@prisma/client';
+import { LoaiNguoiDung, NguoiDung } from '@prisma/client';
 import { LoginResDto } from './dto/login-nguoidung-res.dto';
 
 @Injectable()
@@ -21,19 +21,19 @@ export class AuthService {
   async login(body: LoginDto): Promise<ApiResponse<LoginResDto | null>> {
     try {
       const { taiKhoan, matKhau } = body;
-      let checkUser = await this.prismaService.nguoi_dung.findFirst({
+      let checkUser = await this.prismaService.nguoiDung.findFirst({
         where: {
-          tai_khoan: taiKhoan,
+          taiKhoan: taiKhoan,
         },
       });
 
       if (checkUser) {
-        if (matKhau === checkUser.mat_khau) {
+        if (matKhau === checkUser.matKhau) {
           let token = await this.jwtService.signAsync(
             {
-              tai_khoan: checkUser.tai_khoan,
+              taiKhoan: checkUser.taiKhoan,
               email: checkUser.email,
-              loaiNguoiDung: checkUser.loai_nguoi_dung,
+              maLoaiNguoiDung: checkUser.maLoaiNguoiDung,
             },
             {
               expiresIn: this.configService.get('EXPIRE_TOKEN_TIME'),
@@ -41,11 +41,11 @@ export class AuthService {
             },
           );
           const data: LoginResDto = {
-            taiKhoan: checkUser.tai_khoan,
-            hoTen: checkUser.ho_ten,
+            taiKhoan: checkUser.taiKhoan,
+            hoTen: checkUser.hoTen,
             email: checkUser.email,
-            soDT: checkUser.so_dt,
-            maLoaiNguoiDung: checkUser.loai_nguoi_dung,
+            soDT: checkUser.soDt,
+            maLoaiNguoiDung: checkUser.maLoaiNguoiDung,
             accessToken: token,
           };
 
@@ -63,18 +63,18 @@ export class AuthService {
     }
   }
 
-  async signUp(body: SignUpDto): Promise<ApiResponse<nguoi_dung | null>> {
+  async signUp(body: SignUpDto): Promise<ApiResponse<NguoiDung | null>> {
     try {
       const { taiKhoan, email, matKhau, hoTen, soDt } = body;
 
-      let checkEmailUser = await this.prismaService.nguoi_dung.findFirst({
+      let checkEmailUser = await this.prismaService.nguoiDung.findFirst({
         where: {
           email: email,
         },
       });
-      let checkAccUser = await this.prismaService.nguoi_dung.findFirst({
+      let checkAccUser = await this.prismaService.nguoiDung.findFirst({
         where: {
-          tai_khoan: taiKhoan,
+          taiKhoan: taiKhoan,
         },
       });
 
@@ -87,18 +87,31 @@ export class AuthService {
       }
 
       let newNguoiDung = {
-        tai_khoan: taiKhoan,
+        taiKhoan,
         email,
-        mat_khau: matKhau,
-        ho_ten: hoTen,
-        so_dt: soDt,
-        loai_nguoi_dung: 'KhachHang',
+        matKhau,
+        hoTen,
+        soDt,
+        maLoaiNguoiDung: 'KhachHang',
       };
 
-      const nguoiDung = await this.prismaService.nguoi_dung.create({
+      const nguoiDung = await this.prismaService.nguoiDung.create({
         data: newNguoiDung,
       });
       return ResponseHelper.success(nguoiDung, 'Đăng ký thành công');
+    } catch (error) {
+      if (error?.status && error?.status != 500)
+        ResponseHelper.error(error.message, error.status);
+      ResponseHelper.internalError();
+    }
+  }
+
+  async layDanhSachLoaiNguoiDung(): Promise<
+    ApiResponse<LoaiNguoiDung[] | null>
+  > {
+    try {
+      let data = await this.prismaService.loaiNguoiDung.findMany();
+      return ResponseHelper.success(data);
     } catch (error) {
       if (error?.status && error?.status != 500)
         ResponseHelper.error(error.message, error.status);

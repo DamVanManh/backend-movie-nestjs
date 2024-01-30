@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { BinhluanService } from './binhluan.service';
 import { ApiResponse } from 'src/common/dtos/response.dto';
-import { nguoi_dung } from '@prisma/client';
+import { NguoiDung } from '@prisma/client';
 import { CreateBinhluanDto } from './dto/create-binhluan.dto';
 import { Request } from 'express';
 import { AuthGuard } from '@nestjs/passport';
@@ -24,7 +24,7 @@ export class BinhluanController {
   @Get('id-anh/:id')
   async getByIdAnh(
     @Param('id') id: string,
-  ): Promise<ApiResponse<nguoi_dung[] | string>> {
+  ): Promise<ApiResponse<NguoiDung[] | string>> {
     return await this.binhluanService.getByIdAnh(id);
   }
 
@@ -33,8 +33,8 @@ export class BinhluanController {
   async binhLuan(
     @Body() createBinhluanDto: CreateBinhluanDto,
     @Req() req: Request,
-  ): Promise<ApiResponse<nguoi_dung | string>> {
-    let nguoiDungId = req.user['nguoi_dung_id'];
+  ): Promise<ApiResponse<NguoiDung | string>> {
+    let nguoiDungId = req.user['NguoiDung_id'];
     return await this.binhluanService.binhLuan(createBinhluanDto, nguoiDungId);
   }
 }

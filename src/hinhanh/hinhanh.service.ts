@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { nguoi_dung } from '@prisma/client';
+import { NguoiDung } from '@prisma/client';
 import { ApiResponse } from 'src/common/dtos/response.dto';
 import { ResponseHelper } from 'src/common/helpers/response.helper';
 import { PrismaService } from 'src/database/prisma.service';
@@ -9,10 +9,10 @@ import { CreateHinhAnhDto } from './dto/create-hinhanh.dto';
 @Injectable()
 export class HinhanhService {
   constructor(private prismaService: PrismaService) {}
-  async getHinhAnhs(): Promise<ApiResponse<nguoi_dung[] | string>> {
+  async getHinhAnhs(): Promise<ApiResponse<NguoiDung[] | string>> {
     // try {
 
-    //     let data = await this.prismaService.nguoi_dung.findMany();
+    //     let data = await this.prismaService.NguoiDung.findMany();
     //     return ResponseHelper.success(data)
     // } catch (error) {
     //     if (error?.status && error?.status != 500)
@@ -25,10 +25,10 @@ export class HinhanhService {
 
   async getHinhAnhByName(
     q: string,
-  ): Promise<ApiResponse<nguoi_dung[] | string>> {
+  ): Promise<ApiResponse<NguoiDung[] | string>> {
     // try {
 
-    //     let data = await this.prismaService.nguoi_dung.findMany({
+    //     let data = await this.prismaService.NguoiDung.findMany({
     //         where: {
     //             ten_hinh: {
     //                 contains: q
@@ -50,18 +50,18 @@ export class HinhanhService {
   ): Promise<ApiResponse<InfoHinhAnhVaNguoiTaoAnh | string>> {
     // try {
 
-    //     let data = await this.prismaService.nguoi_dung.findUnique({
+    //     let data = await this.prismaService.NguoiDung.findUnique({
     //         where: {
     //             hinh_id: parseFloat(id)
     //         },
     //         include: {
-    //             nguoi_dung: {
+    //             NguoiDung: {
     //                 select: {
     //                     email: true,
     //                     ho_ten: true,
     //                     tuoi: true,
     //                     anh_dai_dien: true,
-    //                     nguoi_dung_id: true,
+    //                     NguoiDung_id: true,
     //                 },
     //             },
     //         },
@@ -82,12 +82,12 @@ export class HinhanhService {
 
   async getHinhAnhsByNguoiDung(
     nguoiDungId: number,
-  ): Promise<ApiResponse<nguoi_dung[] | string | null>> {
+  ): Promise<ApiResponse<NguoiDung[] | string | null>> {
     // try {
 
-    //     let data = await this.prismaService.nguoi_dung.findMany({
+    //     let data = await this.prismaService.NguoiDung.findMany({
     //         where: {
-    //             nguoi_dung_id: nguoiDungId
+    //             NguoiDung_id: nguoiDungId
     //         }
     //     });
     //     return ResponseHelper.success(data)
@@ -105,10 +105,10 @@ export class HinhanhService {
     nguoiDungId: number,
   ): Promise<ApiResponse<string>> {
     // try {
-    //     let hinhanh = await this.prismaService.nguoi_dung.findUnique({
+    //     let hinhanh = await this.prismaService.NguoiDung.findUnique({
     //         where: {
     //             hinh_id: parseFloat(hinhId),
-    //             nguoi_dung_id: nguoiDungId
+    //             NguoiDung_id: nguoiDungId
     //         }
     //     })
 
@@ -129,7 +129,7 @@ export class HinhanhService {
     //     });
 
     //     // xoá hình sau khi thảo mãn điều kiện
-    //     await this.prismaService.nguoi_dung.delete({
+    //     await this.prismaService.NguoiDung.delete({
     //         where: {
     //             hinh_id: parseFloat(hinhId)
     //         }
@@ -147,14 +147,14 @@ export class HinhanhService {
   async create(
     createHinhAnhDto: CreateHinhAnhDto,
     nguoiDungId: number,
-  ): Promise<ApiResponse<nguoi_dung | string>> {
+  ): Promise<ApiResponse<NguoiDung | string>> {
     // try {
 
     //     let hinhAnh = {
     //         ...createHinhAnhDto,
-    //         nguoi_dung_id: nguoiDungId
+    //         NguoiDung_id: nguoiDungId
     //     }
-    //     const newHinhAnh = await this.prismaService.nguoi_dung.create({ data: hinhAnh });
+    //     const newHinhAnh = await this.prismaService.NguoiDung.create({ data: hinhAnh });
 
     //     return ResponseHelper.success(newHinhAnh)
     // } catch (error) {

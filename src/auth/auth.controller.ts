@@ -7,12 +7,13 @@ import {
   HttpException,
   HttpStatus,
   Post,
+  Get,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login-nguoidung.dto';
 import { SignUpDto } from './dto/signup-nguoidung.dto';
 import { ApiResponse } from 'src/common/dtos/response.dto';
-import { nguoi_dung } from '@prisma/client';
+import { NguoiDung, LoaiNguoiDung } from '@prisma/client';
 import { LoginResDto } from './dto/login-nguoidung-res.dto';
 
 @Controller('QuanLyNguoiDung')
@@ -23,7 +24,7 @@ export class AuthController {
   @Post('DangNhap')
   async login(
     @Body() body: LoginDto,
-  ): Promise<ApiResponse<LoginResDto | string>> {
+  ): Promise<ApiResponse<LoginResDto | null>> {
     return await this.authService.login(body);
   }
 
@@ -31,7 +32,15 @@ export class AuthController {
   @Post('DangKy')
   async signUp(
     @Body() body: SignUpDto,
-  ): Promise<ApiResponse<nguoi_dung | string>> {
+  ): Promise<ApiResponse<NguoiDung | null>> {
     return await this.authService.signUp(body);
+  }
+
+  @HttpCode(200)
+  @Get('LayDanhSachLoaiNguoiDung')
+  async layDanhSachLoaiNguoiDung(): Promise<
+    ApiResponse<LoaiNguoiDung[] | null>
+  > {
+    return await this.authService.layDanhSachLoaiNguoiDung();
   }
 }
