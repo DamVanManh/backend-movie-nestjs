@@ -43,4 +43,10 @@ export class AuthController {
   > {
     return await this.authService.layDanhSachLoaiNguoiDung();
   }
+
+  @HttpCode(200)
+  @Get('LayDanhSachNguoiDung')
+  async LayDanhSachNguoiDung(): Promise<ApiResponse<NguoiDung[] | null>> {
+    return await this.authService.LayDanhSachNguoiDung();
+  }
 }

@@ -118,4 +118,15 @@ export class AuthService {
       ResponseHelper.internalError();
     }
   }
+
+  async LayDanhSachNguoiDung(): Promise<ApiResponse<NguoiDung[] | null>> {
+    try {
+      let data = await this.prismaService.nguoiDung.findMany();
+      return ResponseHelper.success(data);
+    } catch (error) {
+      if (error?.status && error?.status != 500)
+        ResponseHelper.error(error.message, error.status);
+      ResponseHelper.internalError();
+    }
+  }
 }
