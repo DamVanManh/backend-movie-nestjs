@@ -13,16 +13,17 @@ import { LoginDto } from './dto/login-nguoidung.dto';
 import { SignUpDto } from './dto/signup-nguoidung.dto';
 import { ApiResponse } from 'src/common/dtos/response.dto';
 import { nguoi_dung } from '@prisma/client';
+import { LoginResDto } from './dto/login-nguoidung-res.dto';
 
 @Controller('QuanLyNguoiDung')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @HttpCode(200)
-  @Post('login')
+  @Post('DangNhap')
   async login(
     @Body() body: LoginDto,
-  ): Promise<ApiResponse<nguoi_dung | string>> {
+  ): Promise<ApiResponse<LoginResDto | string>> {
     return await this.authService.login(body);
   }
 

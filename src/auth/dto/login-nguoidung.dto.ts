@@ -1,4 +1,4 @@
 export class LoginDto {
-    email: string;
-    matKhau: string;
+  taiKhoan: string;
+  matKhau: string;
 }
