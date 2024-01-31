@@ -173,4 +173,23 @@ export class AuthService {
       ResponseHelper.internalError();
     }
   }
+
+  async timKiemNguoiDung(
+    tuKhoa: string,
+  ): Promise<ApiResponse<NguoiDung[] | null>> {
+    try {
+      let nguoiDungs = await this.prismaService.nguoiDung.findMany({
+        where: {
+          hoTen: {
+            contains: tuKhoa,
+          },
+        },
+      });
+      return ResponseHelper.success(nguoiDungs);
+    } catch (error) {
+      if (error?.status && error?.status != 500)
+        ResponseHelper.error(error.message, error.status);
+      ResponseHelper.internalError();
+    }
+  }
 }

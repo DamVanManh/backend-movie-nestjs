@@ -66,4 +66,12 @@ export class AuthController {
       soPhanTuTrenTrang,
     );
   }
+
+  @HttpCode(200)
+  @Get('TimKiemNguoiDung')
+  async timKiemNguoiDung(
+    @Query('tuKhoa') tuKhoa: string,
+  ): Promise<ApiResponse<NguoiDung[] | null>> {
+    return await this.authService.timKiemNguoiDung(tuKhoa);
+  }
 }
