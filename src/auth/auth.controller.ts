@@ -10,6 +10,8 @@ import {
   Get,
   Query,
   ParseIntPipe,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login-nguoidung.dto';
@@ -18,6 +20,8 @@ import { ApiResponse } from 'src/common/dtos/response.dto';
 import { NguoiDung, LoaiNguoiDung } from '@prisma/client';
 import { LoginResDto } from './dto/login-nguoidung-res.dto';
 import { LayDanhSachNguoiDungPhanTrangResDto } from './dto/laydanhsachnguoidungphantrang-res.dto copy';
+import { AuthGuard } from '@nestjs/passport';
+import { Request } from 'express';
 
 @Controller('QuanLyNguoiDung')
 export class AuthController {
@@ -87,5 +91,25 @@ export class AuthController {
     @Query('tuKhoa') tuKhoa: string,
   ): Promise<ApiResponse<NguoiDung[] | null>> {
     return await this.authService.timKiemNguoiDung(tuKhoa);
+  }
+
+  // cần return data liên quan thông tin đặt vé mà hiện tại chưa làm nên sẽ hoàn thiện sau
+  // @HttpCode(200)
+  // @Get('LayThongTinNguoiDung')
+  // async layThongTinNguoiDung(
+  //   @Query('tuKhoa') tuKhoa: string,
+  // ): Promise<ApiResponse<NguoiDung[] | null>> {
+  //   return await this.authService.layThongTinNguoiDung(tuKhoa);
+  // }
+
+  @UseGuards(AuthGuard('jwt'))
+  @HttpCode(201)
+  @Post('ThemNguoiDung')
+  async themNguoiDung(
+    @Body() body: NguoiDung,
+    @Req() req: Request,
+  ): Promise<ApiResponse<NguoiDung | null>> {
+    const maLoaiNguoiDungToken = req.user['maLoaiNguoiDung'];
+    return await this.authService.themNguoiDung(body, maLoaiNguoiDungToken);
   }
 }

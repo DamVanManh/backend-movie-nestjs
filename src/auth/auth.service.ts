@@ -10,6 +10,7 @@ import { ApiResponse } from 'src/common/dtos/response.dto';
 import { LoaiNguoiDung, NguoiDung } from '@prisma/client';
 import { LoginResDto } from './dto/login-nguoidung-res.dto';
 import { LayDanhSachNguoiDungPhanTrangResDto } from './dto/laydanhsachnguoidungphantrang-res.dto copy';
+import { MaLoaiNguoiDung } from './dto/maloainguoidung.dto';
 
 @Injectable()
 export class AuthService {
@@ -186,6 +187,65 @@ export class AuthService {
         },
       });
       return ResponseHelper.success(nguoiDungs);
+    } catch (error) {
+      if (error?.status && error?.status != 500)
+        ResponseHelper.error(error.message, error.status);
+      ResponseHelper.internalError();
+    }
+  }
+
+  async themNguoiDung(
+    body: NguoiDung,
+    maLoaiNguoiDungToken: string,
+  ): Promise<ApiResponse<NguoiDung | null>> {
+    try {
+      if (maLoaiNguoiDungToken !== MaLoaiNguoiDung.QuanTri) {
+        ResponseHelper.error(undefined, HttpStatus.UNAUTHORIZED);
+      }
+      const { taiKhoan, email, matKhau, soDt, maLoaiNguoiDung, hoTen } = body;
+      let check = await this.prismaService.nguoiDung.findFirst({
+        where: {
+          OR: [{ taiKhoan }, { email }],
+        },
+      });
+
+      if (check) {
+        if (check.email === email && check.taiKhoan === taiKhoan) {
+          ResponseHelper.error(
+            'Email và tài khoản đã tồn tại',
+            HttpStatus.UNAUTHORIZED,
+          );
+        }
+
+        if (check.email === email) {
+          ResponseHelper.error('Email đã tồn tại', HttpStatus.UNAUTHORIZED);
+        }
+
+        if (check.taiKhoan === taiKhoan) {
+          ResponseHelper.error('Tài khoản đã tồn tại', HttpStatus.UNAUTHORIZED);
+        }
+      } else {
+        if (!taiKhoan || !email || !matKhau) {
+          ResponseHelper.error(
+            'Dữ liệu không hợp lệ!',
+            HttpStatus.UNAUTHORIZED,
+          );
+        }
+
+        let newNguoiDung = {
+          taiKhoan,
+          matKhau,
+          email,
+          soDt: soDt ?? null,
+          maLoaiNguoiDung: maLoaiNguoiDung ?? null,
+          hoTen: hoTen ?? null,
+        };
+
+        const savedNguoiDung = await this.prismaService.nguoiDung.create({
+          data: newNguoiDung,
+        });
+        return ResponseHelper.success(savedNguoiDung);
+      }
     } catch (error) {
       if (error?.status && error?.status != 500)
         ResponseHelper.error(error.message, error.status);
