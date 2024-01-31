@@ -49,13 +49,27 @@ export class AuthController {
 
   @HttpCode(200)
   @Get('LayDanhSachNguoiDung')
-  async LayDanhSachNguoiDung(): Promise<ApiResponse<NguoiDung[] | null>> {
+  async layDanhSachNguoiDung(): Promise<ApiResponse<NguoiDung[] | null>> {
     return await this.authService.layDanhSachNguoiDung();
   }
 
   @HttpCode(200)
   @Get('LayDanhSachNguoiDungPhanTrang')
-  async LayDanhSachNguoiDungPhanTrang(
+  async layDanhSachNguoiDungPhanTrang(
+    @Query('tuKhoa') tuKhoa: string,
+    @Query('soTrang', ParseIntPipe) soTrang: number,
+    @Query('soPhanTuTrenTrang', ParseIntPipe) soPhanTuTrenTrang: number,
+  ): Promise<ApiResponse<LayDanhSachNguoiDungPhanTrangResDto | null>> {
+    return await this.authService.layDanhSachNguoiDungPhanTrang(
+      tuKhoa,
+      soTrang,
+      soPhanTuTrenTrang,
+    );
+  }
+
+  @HttpCode(200)
+  @Get('TimKiemNguoiDungPhanTrang')
+  async timKiemNguoiDungPhanTrang(
     @Query('tuKhoa') tuKhoa: string,
     @Query('soTrang', ParseIntPipe) soTrang: number,
     @Query('soPhanTuTrenTrang', ParseIntPipe) soPhanTuTrenTrang: number,
