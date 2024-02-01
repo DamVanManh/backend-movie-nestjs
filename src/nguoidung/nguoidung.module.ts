@@ -1,11 +1,12 @@
 import { Module } from '@nestjs/common';
-import { NguoidungService } from './nguoidung.service';
-import { NguoidungController } from './nguoidung.controller';
+import { NguoiDungService } from './nguoidung.service';
+import { NguoiDungController } from './nguoidung.controller';
+import { JwtModule } from '@nestjs/jwt';
 import { PrismaModule } from 'src/database/prisma.module';
 
 @Module({
-  imports: [PrismaModule],
-  controllers: [NguoidungController,],
-  providers: [NguoidungService],
+  imports: [JwtModule.register({}), PrismaModule],
+  controllers: [NguoiDungController],
+  providers: [NguoiDungService],
 })
-export class NguoidungModule { }
+export class NguoiDungModule {}

@@ -1,18 +1,18 @@
 import { Module } from '@nestjs/common';
-import { AuthModule } from './auth/auth.module';
-import { NguoidungModule } from './nguoidung/nguoidung.module';
+import { NguoiDungModule } from './nguoidung/nguoidung.module';
 import { ConfigModule } from '@nestjs/config';
 import { JwtStrategy } from './stratery/jwt.strategy';
 import { HinhanhModule } from './hinhanh/hinhanh.module';
 import { BinhluanModule } from './binhluan/binhluan.module';
-import { LuuanhModule } from './luuanh/luuanh.module';
+import { PhimModule } from './phim/phim.module';
 // , HinhanhModule, BinhluanModule, LuuanhModule , NguoidungModule, AuthModule,
 @Module({
   imports: [
-    AuthModule,
+    NguoiDungModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    PhimModule,
   ],
   controllers: [],
   providers: [JwtStrategy],
