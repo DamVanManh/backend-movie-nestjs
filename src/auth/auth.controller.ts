@@ -13,6 +13,7 @@ import {
   UseGuards,
   Req,
   Put,
+  Delete,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login-nguoidung.dto';
@@ -126,5 +127,16 @@ export class AuthController {
       body,
       maLoaiNguoiDungToken,
     );
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @HttpCode(200)
+  @Delete('XoaNguoiDung')
+  async xoaNguoiDung(
+    @Query('taiKhoan') taiKhoan: string,
+    @Req() req: Request,
+  ): Promise<ApiResponse<string | null>> {
+    const maLoaiNguoiDungToken = req.user['maLoaiNguoiDung'];
+    return await this.authService.xoaNguoiDung(taiKhoan, maLoaiNguoiDungToken);
   }
 }

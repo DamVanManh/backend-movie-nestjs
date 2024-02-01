@@ -200,7 +200,7 @@ export class AuthService {
   ): Promise<ApiResponse<NguoiDung | null>> {
     try {
       if (maLoaiNguoiDungToken !== MaLoaiNguoiDung.QuanTri) {
-        ResponseHelper.error(undefined, HttpStatus.UNAUTHORIZED);
+        ResponseHelper.error(undefined, HttpStatus.FORBIDDEN);
       }
       const { taiKhoan, email, matKhau, soDt, maLoaiNguoiDung, hoTen } = body;
       let check = await this.prismaService.nguoiDung.findFirst({
@@ -295,6 +295,39 @@ export class AuthService {
         },
       });
       return ResponseHelper.success(updatedNguoiDung);
+    } catch (error) {
+      if (error?.status && error?.status != 500)
+        ResponseHelper.error(error.message, error.status);
+      ResponseHelper.internalError();
+    }
+  }
+
+  async xoaNguoiDung(
+    taiKhoan: string,
+    maLoaiNguoiDungToken: string,
+  ): Promise<ApiResponse<string | null>> {
+    try {
+      if (maLoaiNguoiDungToken !== MaLoaiNguoiDung.QuanTri) {
+        ResponseHelper.error(undefined, HttpStatus.FORBIDDEN);
+      }
+
+      let check = await this.prismaService.nguoiDung.findFirst({
+        where: {
+          taiKhoan: taiKhoan,
+        },
+      });
+
+      if (!check) {
+        ResponseHelper.error('Tài khoản không tồn tại', HttpStatus.BAD_REQUEST);
+      }
+
+      let nguoiDungs = await this.prismaService.nguoiDung.delete({
+        where: {
+          taiKhoan,
+        },
+      });
+
+      return ResponseHelper.success('Xóa thành công!');
     } catch (error) {
       if (error?.status && error?.status != 500)
         ResponseHelper.error(error.message, error.status);
