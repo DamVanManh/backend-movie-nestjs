@@ -213,23 +213,20 @@ export class AuthService {
         if (check.email === email && check.taiKhoan === taiKhoan) {
           ResponseHelper.error(
             'Email và tài khoản đã tồn tại',
-            HttpStatus.UNAUTHORIZED,
+            HttpStatus.BAD_REQUEST,
           );
         }
 
         if (check.email === email) {
-          ResponseHelper.error('Email đã tồn tại', HttpStatus.UNAUTHORIZED);
+          ResponseHelper.error('Email đã tồn tại', HttpStatus.BAD_REQUEST);
         }
 
         if (check.taiKhoan === taiKhoan) {
-          ResponseHelper.error('Tài khoản đã tồn tại', HttpStatus.UNAUTHORIZED);
+          ResponseHelper.error('Tài khoản đã tồn tại', HttpStatus.BAD_REQUEST);
         }
       } else {
         if (!taiKhoan || !email || !matKhau) {
-          ResponseHelper.error(
-            'Dữ liệu không hợp lệ!',
-            HttpStatus.UNAUTHORIZED,
-          );
+          ResponseHelper.error('Dữ liệu không hợp lệ!', HttpStatus.BAD_REQUEST);
         }
 
         let newNguoiDung = {
@@ -246,6 +243,58 @@ export class AuthService {
         });
         return ResponseHelper.success(savedNguoiDung);
       }
+    } catch (error) {
+      if (error?.status && error?.status != 500)
+        ResponseHelper.error(error.message, error.status);
+      ResponseHelper.internalError();
+    }
+  }
+
+  async capNhatThongTinNguoiDung(
+    body: NguoiDung,
+    maLoaiNguoiDungToken: string,
+  ): Promise<ApiResponse<NguoiDung | null>> {
+    try {
+      const { taiKhoan, email, maLoaiNguoiDung } = body;
+
+      let check = await this.prismaService.nguoiDung.findFirst({
+        where: {
+          taiKhoan: taiKhoan,
+        },
+      });
+
+      if (!check) {
+        ResponseHelper.error('Tài khoản không tồn tại', HttpStatus.BAD_REQUEST);
+      }
+
+      // accout là Khách Hàng thì không được phép đổi maLoaiNguoiDung
+      if (
+        maLoaiNguoiDung &&
+        maLoaiNguoiDung !== check.maLoaiNguoiDung &&
+        maLoaiNguoiDungToken !== MaLoaiNguoiDung.QuanTri
+      ) {
+        ResponseHelper.error('Không có quyền truy cập!', HttpStatus.FORBIDDEN);
+      }
+
+      // check email có tồn tại chưa nếu user change mail
+      if (email && email !== check.email) {
+        let checkEmail = await this.prismaService.nguoiDung.findFirst({
+          where: {
+            email: email,
+          },
+        });
+        if (checkEmail) {
+          ResponseHelper.error('Email đã tồn tại', HttpStatus.BAD_REQUEST);
+        }
+      }
+
+      const updatedNguoiDung = await this.prismaService.nguoiDung.update({
+        where: { taiKhoan },
+        data: {
+          ...body,
+        },
+      });
+      return ResponseHelper.success(updatedNguoiDung);
     } catch (error) {
       if (error?.status && error?.status != 500)
         ResponseHelper.error(error.message, error.status);

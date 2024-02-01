@@ -12,6 +12,7 @@ import {
   ParseIntPipe,
   UseGuards,
   Req,
+  Put,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login-nguoidung.dto';
@@ -94,8 +95,8 @@ export class AuthController {
   }
 
   // cần return data liên quan thông tin đặt vé mà hiện tại chưa làm nên sẽ hoàn thiện sau
-  // @HttpCode(200)
-  // @Get('LayThongTinNguoiDung')
+  // @HttpCode(200) // token phải là quản trị
+  // @Post('LayThongTinNguoiDung')
   // async layThongTinNguoiDung(
   //   @Query('tuKhoa') tuKhoa: string,
   // ): Promise<ApiResponse<NguoiDung[] | null>> {
@@ -111,5 +112,19 @@ export class AuthController {
   ): Promise<ApiResponse<NguoiDung | null>> {
     const maLoaiNguoiDungToken = req.user['maLoaiNguoiDung'];
     return await this.authService.themNguoiDung(body, maLoaiNguoiDungToken);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @HttpCode(201)
+  @Put('CapNhatThongTinNguoiDung')
+  async capNhatThongTinNguoiDung(
+    @Body() body: NguoiDung,
+    @Req() req: Request,
+  ): Promise<ApiResponse<NguoiDung | null>> {
+    const maLoaiNguoiDungToken = req.user['maLoaiNguoiDung'];
+    return await this.authService.capNhatThongTinNguoiDung(
+      body,
+      maLoaiNguoiDungToken,
+    );
   }
 }
