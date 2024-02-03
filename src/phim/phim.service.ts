@@ -5,7 +5,8 @@ import { Banner, Phim } from '@prisma/client';
 import { PrismaService } from 'src/database/prisma.service';
 import { ResponseHelper } from 'src/common/helpers/response.helper';
 import { MaLoaiNguoiDung } from 'src/nguoidung/dto/maloainguoidung.dto';
-import { ThemPhimUploadHinhReqDto } from './dto/themphimuploadhinhreq.dto';
+import { ThemPhimUploadHinhReqDto } from './dto/themphimuploadhinh-req.dto';
+import { CapNhatPhimUploadReqDto } from './dto/capnhatphimupload-req.dto';
 
 @Injectable()
 export class PhimService {
@@ -153,6 +154,69 @@ export class PhimService {
       };
       let data = await this.prismaService.phim.create({
         data: newPhim,
+      });
+      return ResponseHelper.success(data);
+    } catch (error) {
+      if (error?.status && error?.status != 500)
+        ResponseHelper.error(error.message, error.status);
+      ResponseHelper.internalError();
+    }
+  }
+
+  async capNhatPhimUpload(
+    file: Express.Multer.File,
+    themPhimUploadHinhReqDto: CapNhatPhimUploadReqDto,
+    maLoaiNguoiDungToken: string,
+  ): Promise<ApiResponse<Phim | null>> {
+    try {
+      if (maLoaiNguoiDungToken !== MaLoaiNguoiDung.QuanTri) {
+        ResponseHelper.error(undefined, HttpStatus.FORBIDDEN);
+      }
+
+      const maPhim = parseInt(themPhimUploadHinhReqDto.maPhim);
+
+      let checkPhim = await this.prismaService.phim.findFirst({
+        where: {
+          maPhim,
+        },
+      });
+
+      if (!checkPhim) {
+        ResponseHelper.error('Phim không tồn tại!', HttpStatus.BAD_REQUEST);
+      }
+
+      const dataUpdate = {
+        tenPhim: themPhimUploadHinhReqDto.tenPhim
+          ? themPhimUploadHinhReqDto.tenPhim
+          : checkPhim.tenPhim,
+        trailer: themPhimUploadHinhReqDto.trailer
+          ? themPhimUploadHinhReqDto.trailer
+          : checkPhim.trailer,
+        hinhAnh: file && file.filename ? file.filename : checkPhim.hinhAnh,
+        moTa: themPhimUploadHinhReqDto.moTa
+          ? themPhimUploadHinhReqDto.moTa
+          : checkPhim.moTa,
+        ngayKhoiChieu: themPhimUploadHinhReqDto.ngayKhoiChieu
+          ? new Date(themPhimUploadHinhReqDto.ngayKhoiChieu)
+          : checkPhim.ngayKhoiChieu,
+        danhGia: themPhimUploadHinhReqDto.danhGia
+          ? parseInt(themPhimUploadHinhReqDto.danhGia)
+          : checkPhim.danhGia,
+        hot: themPhimUploadHinhReqDto.hot
+          ? Boolean(parseInt(themPhimUploadHinhReqDto.hot))
+          : checkPhim.hot,
+        dangChieu: themPhimUploadHinhReqDto.dangChieu
+          ? Boolean(parseInt(themPhimUploadHinhReqDto.dangChieu))
+          : checkPhim.dangChieu,
+        sapChieu: themPhimUploadHinhReqDto.sapChieu
+          ? Boolean(parseInt(themPhimUploadHinhReqDto.sapChieu))
+          : checkPhim.sapChieu,
+      };
+      let data = await this.prismaService.phim.update({
+        where: { maPhim },
+        data: {
+          ...dataUpdate,
+        },
       });
       return ResponseHelper.success(data);
     } catch (error) {

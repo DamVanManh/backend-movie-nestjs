@@ -11,6 +11,7 @@ import {
   UseInterceptors,
   UploadedFile,
   Body,
+  Patch,
 } from '@nestjs/common';
 import { PhimService } from './phim.service';
 import { LayDanhSachPhimPhanTrangResDto } from './dto/laydanhsachphimphantrang-res.dto';
@@ -20,7 +21,8 @@ import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { ThemPhimUploadHinhReqDto } from './dto/themphimuploadhinhreq.dto';
+import { ThemPhimUploadHinhReqDto } from './dto/themphimuploadhinh-req.dto';
+import { CapNhatPhimUploadReqDto } from './dto/capnhatphimupload-req.dto';
 
 @Controller('QuanLyPhim')
 export class PhimController {
@@ -96,6 +98,32 @@ export class PhimController {
     return await this.phimService.themPhimUploadHinh(
       file,
       themPhimUploadHinhReqDto,
+      maLoaiNguoiDungToken,
+    );
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @HttpCode(201)
+  @UseInterceptors(
+    FileInterceptor('hinhAnh', {
+      // nếu browser chỉ gửi lên 1 file thì thay bằng FileInterceptor và bỏ tham số '10'(có thể up tối đa 10 hình)
+      storage: diskStorage({
+        destination: process.cwd() + '/public/images', // dường dẫn muốn lưu
+        filename: (req, file, callback) =>
+          callback(null, new Date().getTime() + '_' + file.originalname), // đổi tên file sẽ lưu
+      }),
+    }),
+  )
+  @Patch('/CapNhatPhimUpload')
+  async capNhatPhimUpload(
+    @Req() req: Request,
+    @UploadedFile() file: Express.Multer.File,
+    @Body() capNhatPhimUploadReqDto: CapNhatPhimUploadReqDto,
+  ): Promise<ApiResponse<Phim | null>> {
+    const maLoaiNguoiDungToken = req.user['maLoaiNguoiDung'];
+    return await this.phimService.capNhatPhimUpload(
+      file,
+      capNhatPhimUploadReqDto,
       maLoaiNguoiDungToken,
     );
   }
