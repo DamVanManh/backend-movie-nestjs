@@ -5,13 +5,13 @@ import { Banner, Phim } from '@prisma/client';
 import { PrismaService } from 'src/database/prisma.service';
 import { ResponseHelper } from 'src/common/helpers/response.helper';
 import { MaLoaiNguoiDung } from 'src/nguoidung/dto/maloainguoidung.dto';
+import { ThemPhimUploadHinhReqDto } from './dto/themphimuploadhinhreq.dto';
 
 @Injectable()
 export class PhimService {
   constructor(private prismaService: PrismaService) {}
 
   async layDanhSachBanner(): Promise<ApiResponse<Banner[] | null>> {
-    const data = this.prismaService.banner.findMany();
     try {
       let data = await this.prismaService.banner.findMany();
       return ResponseHelper.success(data);
@@ -115,15 +115,50 @@ export class PhimService {
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} phim`;
+  async layThongTinPhim(maPhim: number): Promise<ApiResponse<Phim | null>> {
+    try {
+      let data = await this.prismaService.phim.findFirst({
+        where: {
+          maPhim,
+        },
+      });
+      return ResponseHelper.success(data);
+    } catch (error) {
+      if (error?.status && error?.status != 500)
+        ResponseHelper.error(error.message, error.status);
+      ResponseHelper.internalError();
+    }
   }
 
-  update(id: number, updatePhimDto) {
-    return `This action updates a #${id} phim`;
-  }
+  async themPhimUploadHinh(
+    file: Express.Multer.File,
+    themPhimUploadHinhReqDto: ThemPhimUploadHinhReqDto,
+    maLoaiNguoiDungToken: string,
+  ): Promise<ApiResponse<Phim | null>> {
+    try {
+      if (maLoaiNguoiDungToken !== MaLoaiNguoiDung.QuanTri) {
+        ResponseHelper.error(undefined, HttpStatus.FORBIDDEN);
+      }
 
-  remove(id: number) {
-    return `This action removes a #${id} phim`;
+      const newPhim = {
+        tenPhim: themPhimUploadHinhReqDto.tenPhim,
+        trailer: themPhimUploadHinhReqDto.trailer,
+        hinhAnh: file.filename,
+        moTa: themPhimUploadHinhReqDto.moTa,
+        ngayKhoiChieu: new Date(themPhimUploadHinhReqDto.ngayKhoiChieu),
+        danhGia: parseInt(themPhimUploadHinhReqDto.danhGia),
+        hot: Boolean(parseInt(themPhimUploadHinhReqDto.hot)),
+        dangChieu: Boolean(parseInt(themPhimUploadHinhReqDto.dangChieu)),
+        sapChieu: Boolean(parseInt(themPhimUploadHinhReqDto.sapChieu)),
+      };
+      let data = await this.prismaService.phim.create({
+        data: newPhim,
+      });
+      return ResponseHelper.success(data);
+    } catch (error) {
+      if (error?.status && error?.status != 500)
+        ResponseHelper.error(error.message, error.status);
+      ResponseHelper.internalError();
+    }
   }
 }

@@ -2,15 +2,15 @@ import {
   Controller,
   Get,
   Post,
-  Body,
-  Patch,
-  Param,
   Delete,
   Query,
   HttpCode,
   ParseIntPipe,
   UseGuards,
   Req,
+  UseInterceptors,
+  UploadedFile,
+  Body,
 } from '@nestjs/common';
 import { PhimService } from './phim.service';
 import { LayDanhSachPhimPhanTrangResDto } from './dto/laydanhsachphimphantrang-res.dto';
@@ -18,6 +18,9 @@ import { ApiResponse } from 'src/common/dtos/response.dto';
 import { Banner, Phim } from '@prisma/client';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { ThemPhimUploadHinhReqDto } from './dto/themphimuploadhinhreq.dto';
 
 @Controller('QuanLyPhim')
 export class PhimController {
@@ -62,18 +65,38 @@ export class PhimController {
     return await this.phimService.xoaPhim(maPhim, maLoaiNguoiDungToken);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.phimService.findOne(+id);
+  @UseGuards(AuthGuard('jwt'))
+  @HttpCode(200)
+  @Get('LayThongTinPhim')
+  async layThongTinPhim(
+    @Query('maPhim', ParseIntPipe) maPhim: number,
+  ): Promise<ApiResponse<Phim | null>> {
+    return await this.phimService.layThongTinPhim(maPhim);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePhimDto) {
-    return this.phimService.update(+id, updatePhimDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.phimService.remove(+id);
+  @UseGuards(AuthGuard('jwt'))
+  @HttpCode(201)
+  @UseInterceptors(
+    FileInterceptor('hinhAnh', {
+      // nếu browser chỉ gửi lên 1 file thì thay bằng FileInterceptor và bỏ tham số '10'(có thể up tối đa 10 hình)
+      storage: diskStorage({
+        destination: process.cwd() + '/public/images', // dường dẫn muốn lưu
+        filename: (req, file, callback) =>
+          callback(null, new Date().getTime() + '_' + file.originalname), // đổi tên file sẽ lưu
+      }),
+    }),
+  )
+  @Post('/ThemPhimUploadHinh')
+  async themPhimUploadHinh(
+    @Req() req: Request,
+    @UploadedFile() file: Express.Multer.File,
+    @Body() themPhimUploadHinhReqDto: ThemPhimUploadHinhReqDto,
+  ): Promise<ApiResponse<Phim | null>> {
+    const maLoaiNguoiDungToken = req.user['maLoaiNguoiDung'];
+    return await this.phimService.themPhimUploadHinh(
+      file,
+      themPhimUploadHinhReqDto,
+      maLoaiNguoiDungToken,
+    );
   }
 }
