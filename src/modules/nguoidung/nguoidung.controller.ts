@@ -12,19 +12,25 @@ import {
   Delete,
 } from '@nestjs/common';
 import { NguoiDungService } from './nguoidung.service';
-import { LoginDto } from './dto/login-nguoidung.dto';
-import { SignUpDto } from './dto/signup-nguoidung.dto';
 import { ApiResponse } from 'src/common/dtos/response.dto';
 import { NguoiDung, LoaiNguoiDung } from '@prisma/client';
-import { LoginResDto } from './dto/login-nguoidung-res.dto';
-import { LayDanhSachNguoiDungPhanTrangResDto } from './dto/laydanhsachnguoidungphantrang-res.dto';
+import {
+  LayDanhSachNguoiDungPhanTrangResDto,
+  LoginResDto,
+  SignUpDto,
+  LoginDto,
+  LayThongTinNguoiDungResDto,
+} from './dto/nguoidung.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
+import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('QuanLyNguoiDung')
 export class NguoiDungController {
   constructor(private readonly nguoiDungService: NguoiDungService) {}
 
+  @ApiTags('QuanLyNguoiDung')
   @HttpCode(200)
   @Post('DangNhap')
   async login(
@@ -33,6 +39,7 @@ export class NguoiDungController {
     return await this.nguoiDungService.login(body);
   }
 
+  @ApiTags('QuanLyNguoiDung')
   @HttpCode(201)
   @Post('DangKy')
   async signUp(
@@ -41,6 +48,7 @@ export class NguoiDungController {
     return await this.nguoiDungService.signUp(body);
   }
 
+  @ApiTags('QuanLyNguoiDung')
   @HttpCode(200)
   @Get('LayDanhSachLoaiNguoiDung')
   async layDanhSachLoaiNguoiDung(): Promise<
@@ -49,12 +57,14 @@ export class NguoiDungController {
     return await this.nguoiDungService.layDanhSachLoaiNguoiDung();
   }
 
+  @ApiTags('QuanLyNguoiDung')
   @HttpCode(200)
   @Get('LayDanhSachNguoiDung')
   async layDanhSachNguoiDung(): Promise<ApiResponse<NguoiDung[] | null>> {
     return await this.nguoiDungService.layDanhSachNguoiDung();
   }
 
+  @ApiTags('QuanLyNguoiDung')
   @HttpCode(200)
   @Get('LayDanhSachNguoiDungPhanTrang')
   async layDanhSachNguoiDungPhanTrang(
@@ -69,6 +79,7 @@ export class NguoiDungController {
     );
   }
 
+  @ApiTags('QuanLyNguoiDung')
   @HttpCode(200)
   @Get('TimKiemNguoiDungPhanTrang')
   async timKiemNguoiDungPhanTrang(
@@ -83,6 +94,7 @@ export class NguoiDungController {
     );
   }
 
+  @ApiTags('QuanLyNguoiDung')
   @HttpCode(200)
   @Get('TimKiemNguoiDung')
   async timKiemNguoiDung(
@@ -91,15 +103,18 @@ export class NguoiDungController {
     return await this.nguoiDungService.timKiemNguoiDung(tuKhoa);
   }
 
-  // cần return data liên quan thông tin đặt vé mà hiện tại chưa làm nên sẽ hoàn thiện sau
-  // @HttpCode(200) // token phải là quản trị
-  // @Post('LayThongTinNguoiDung')
-  // async layThongTinNguoiDung(
-  //   @Query('tuKhoa') tuKhoa: string,
-  // ): Promise<ApiResponse<NguoiDung[] | null>> {
-  //   return await this.NguoiDungService.layThongTinNguoiDung(tuKhoa);
-  // }
+  @ApiTags('QuanLyNguoiDung')
+  @ApiBearerAuth('defaultBearerAuth')
+  @UseGuards(AuthGuard('jwt'))
+  @HttpCode(200)
+  @Get('LayThongTinNguoiDung')
+  async layThongTinNguoiDung(
+    @Query('taiKhoan') taiKhoan: string,
+  ): Promise<ApiResponse<LayThongTinNguoiDungResDto | null>> {
+    return await this.nguoiDungService.layThongTinNguoiDung(taiKhoan);
+  }
 
+  @ApiTags('QuanLyNguoiDung')
   @UseGuards(AuthGuard('jwt'))
   @HttpCode(201)
   @Post('ThemNguoiDung')
@@ -114,6 +129,7 @@ export class NguoiDungController {
     );
   }
 
+  @ApiTags('QuanLyNguoiDung')
   @UseGuards(AuthGuard('jwt'))
   @HttpCode(201)
   @Put('CapNhatThongTinNguoiDung')
@@ -128,6 +144,7 @@ export class NguoiDungController {
     );
   }
 
+  @ApiTags('QuanLyNguoiDung')
   @UseGuards(AuthGuard('jwt'))
   @HttpCode(200)
   @Delete('XoaNguoiDung')

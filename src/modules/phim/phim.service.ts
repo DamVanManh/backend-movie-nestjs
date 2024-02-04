@@ -4,7 +4,7 @@ import { ApiResponse } from 'src/common/dtos/response.dto';
 import { Banner, Phim } from '@prisma/client';
 import { PrismaService } from 'src/database/prisma.service';
 import { ResponseHelper } from 'src/common/helpers/response.helper';
-import { MaLoaiNguoiDung } from 'src/modules/nguoidung/dto/maloainguoidung.dto';
+import { MaLoaiNguoiDung } from 'src/modules/nguoidung/dto/nguoidung.dto';
 import { ThemPhimUploadHinhReqDto } from './dto/themphimuploadhinh-req.dto';
 import { CapNhatPhimUploadReqDto } from './dto/capnhatphimupload-req.dto';
 

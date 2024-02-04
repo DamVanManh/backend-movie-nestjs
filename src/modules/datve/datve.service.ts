@@ -7,7 +7,7 @@ import {
   TaoLichChieuReqDto,
 } from './dto/datve.dto';
 import { ResponseHelper } from 'src/common/helpers/response.helper';
-import { MaLoaiNguoiDung } from '../nguoidung/dto/maloainguoidung.dto';
+import { MaLoaiNguoiDung } from '../nguoidung/dto/nguoidung.dto';
 
 @Injectable()
 export class DatveService {

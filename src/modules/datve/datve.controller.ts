@@ -19,11 +19,13 @@ import {
   LayDanhSachPhongVeResDto,
   TaoLichChieuReqDto,
 } from './dto/datve.dto';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('QuanLyDatVe')
 export class DatveController {
   constructor(private readonly datveService: DatveService) {}
 
+  @ApiTags('QuanLyDatVe')
   @UseGuards(AuthGuard('jwt'))
   @HttpCode(201)
   @Post('DatVe')
@@ -35,6 +37,7 @@ export class DatveController {
     return await this.datveService.datve(datveDto, taiKhoan);
   }
 
+  @ApiTags('QuanLyDatVe')
   @UseGuards(AuthGuard('jwt'))
   @HttpCode(201)
   @Post('TaoLichChieu')
@@ -49,6 +52,7 @@ export class DatveController {
     );
   }
 
+  @ApiTags('QuanLyDatVe')
   @HttpCode(200)
   @Get('LayDanhSachPhongVe')
   async layDanhSachPhongVe(

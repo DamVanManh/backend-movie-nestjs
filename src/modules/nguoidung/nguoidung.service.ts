@@ -1,16 +1,18 @@
-import { Response } from 'express';
-import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
-import { LoginDto } from './dto/login-nguoidung.dto';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/database/prisma.service';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { SignUpDto } from './dto/signup-nguoidung.dto';
 import { ResponseHelper } from 'src/common/helpers/response.helper';
 import { ApiResponse } from 'src/common/dtos/response.dto';
 import { LoaiNguoiDung, NguoiDung } from '@prisma/client';
-import { LoginResDto } from './dto/login-nguoidung-res.dto';
-import { LayDanhSachNguoiDungPhanTrangResDto } from './dto/laydanhsachnguoidungphantrang-res.dto';
-import { MaLoaiNguoiDung } from './dto/maloainguoidung.dto';
+import {
+  LayDanhSachNguoiDungPhanTrangResDto,
+  LoginResDto,
+  SignUpDto,
+  LoginDto,
+  MaLoaiNguoiDung,
+  LayThongTinNguoiDungResDto,
+} from './dto/nguoidung.dto';
 
 @Injectable()
 export class NguoiDungService {
@@ -46,7 +48,7 @@ export class NguoiDungService {
             taiKhoan: checkUser.taiKhoan,
             hoTen: checkUser.hoTen,
             email: checkUser.email,
-            soDT: checkUser.soDt,
+            soDt: checkUser.soDt,
             maLoaiNguoiDung: checkUser.maLoaiNguoiDung,
             accessToken: token,
           };
@@ -187,6 +189,59 @@ export class NguoiDungService {
         },
       });
       return ResponseHelper.success(nguoiDungs);
+    } catch (error) {
+      if (error?.status && error?.status != 500)
+        ResponseHelper.error(error.message, error.status);
+      ResponseHelper.internalError();
+    }
+  }
+
+  async layThongTinNguoiDung(
+    taiKhoan: string,
+  ): Promise<ApiResponse<LayThongTinNguoiDungResDto | null>> {
+    try {
+      let check = await this.prismaService.nguoiDung.findFirst({
+        where: {
+          taiKhoan,
+        },
+      });
+
+      if (!check) {
+        ResponseHelper.error(
+          'Người dùng không tồn tại!',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      let data = await this.prismaService.nguoiDung.findFirst({
+        where: {
+          taiKhoan,
+        },
+        include: {
+          LoaiNguoiDung: true,
+          DatVe: {
+            include: {
+              LichChieu: {
+                include: {
+                  Phim: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      const result = {
+        taiKhoan: data?.taiKhoan,
+        matKhau: data?.matKhau,
+        hoTen: data?.hoTen,
+        email: data?.email,
+        soDt: data?.soDt,
+        maLoaiNguoiDung: data?.maLoaiNguoiDung,
+        loaiNguoiDung: data?.LoaiNguoiDung,
+        danhSachVeDaMuas: data?.DatVe,
+      };
+      return ResponseHelper.success(result);
     } catch (error) {
       if (error?.status && error?.status != 500)
         ResponseHelper.error(error.message, error.status);

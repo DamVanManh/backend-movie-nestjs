@@ -23,17 +23,20 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { ThemPhimUploadHinhReqDto } from './dto/themphimuploadhinh-req.dto';
 import { CapNhatPhimUploadReqDto } from './dto/capnhatphimupload-req.dto';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('QuanLyPhim')
 export class PhimController {
   constructor(private readonly phimService: PhimService) {}
 
+  @ApiTags('QuanLyPhim')
   @HttpCode(200)
   @Get('LayDanhSachBanner')
   layDanhSachBanner(): Promise<ApiResponse<Banner[] | null>> {
     return this.phimService.layDanhSachBanner();
   }
 
+  @ApiTags('QuanLyPhim')
   @HttpCode(200)
   @Get('LayDanhSachPhim')
   layDanhSachPhim(
@@ -42,6 +45,7 @@ export class PhimController {
     return this.phimService.layDanhSachPhim(tenPhim);
   }
 
+  @ApiTags('QuanLyPhim')
   @HttpCode(200)
   @Get('LayDanhSachPhimPhanTrang')
   async layDanhSachPhimPhanTrang(
@@ -56,6 +60,7 @@ export class PhimController {
     );
   }
 
+  @ApiTags('QuanLyPhim')
   @UseGuards(AuthGuard('jwt'))
   @HttpCode(200)
   @Delete('XoaPhim')
@@ -67,6 +72,7 @@ export class PhimController {
     return await this.phimService.xoaPhim(maPhim, maLoaiNguoiDungToken);
   }
 
+  @ApiTags('QuanLyPhim')
   @UseGuards(AuthGuard('jwt'))
   @HttpCode(200)
   @Get('LayThongTinPhim')
@@ -76,18 +82,19 @@ export class PhimController {
     return await this.phimService.layThongTinPhim(maPhim);
   }
 
+  @ApiTags('QuanLyPhim')
   @UseGuards(AuthGuard('jwt'))
   @HttpCode(201)
   @UseInterceptors(
     FileInterceptor('hinhAnh', {
-      // nếu browser chỉ gửi lên 1 file thì thay bằng FileInterceptor và bỏ tham số '10'(có thể up tối đa 10 hình)
       storage: diskStorage({
-        destination: process.cwd() + '/public/images', // dường dẫn muốn lưu
+        destination: process.cwd() + '/public/images',
         filename: (req, file, callback) =>
-          callback(null, new Date().getTime() + '_' + file.originalname), // đổi tên file sẽ lưu
+          callback(null, new Date().getTime() + '_' + file.originalname),
       }),
     }),
   )
+  @ApiTags('QuanLyPhim')
   @Post('/ThemPhimUploadHinh')
   async themPhimUploadHinh(
     @Req() req: Request,
@@ -102,18 +109,20 @@ export class PhimController {
     );
   }
 
+  @ApiTags('QuanLyPhim')
   @UseGuards(AuthGuard('jwt'))
   @HttpCode(201)
   @UseInterceptors(
     FileInterceptor('hinhAnh', {
-      // nếu browser chỉ gửi lên 1 file thì thay bằng FileInterceptor và bỏ tham số '10'(có thể up tối đa 10 hình)
       storage: diskStorage({
-        destination: process.cwd() + '/public/images', // dường dẫn muốn lưu
+        destination: process.cwd() + '/public/images',
         filename: (req, file, callback) =>
-          callback(null, new Date().getTime() + '_' + file.originalname), // đổi tên file sẽ lưu
+          callback(null, new Date().getTime() + '_' + file.originalname),
       }),
     }),
   )
+  @ApiTags('QuanLyPhim')
+  @UseGuards(AuthGuard('jwt'))
   @Patch('/CapNhatPhimUpload')
   async capNhatPhimUpload(
     @Req() req: Request,
