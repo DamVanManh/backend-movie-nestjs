@@ -89,7 +89,7 @@ export class PhimService {
   ): Promise<ApiResponse<string | null>> {
     try {
       if (maLoaiNguoiDungToken !== MaLoaiNguoiDung.QuanTri) {
-        ResponseHelper.error(undefined, HttpStatus.FORBIDDEN);
+        ResponseHelper.error('Không có quyền truy cập!', HttpStatus.FORBIDDEN);
       }
 
       let check = await this.prismaService.phim.findFirst({
@@ -138,7 +138,7 @@ export class PhimService {
   ): Promise<ApiResponse<Phim | null>> {
     try {
       if (maLoaiNguoiDungToken !== MaLoaiNguoiDung.QuanTri) {
-        ResponseHelper.error(undefined, HttpStatus.FORBIDDEN);
+        ResponseHelper.error('Không có quyền truy cập!', HttpStatus.FORBIDDEN);
       }
 
       const newPhim = {
@@ -170,7 +170,7 @@ export class PhimService {
   ): Promise<ApiResponse<Phim | null>> {
     try {
       if (maLoaiNguoiDungToken !== MaLoaiNguoiDung.QuanTri) {
-        ResponseHelper.error(undefined, HttpStatus.FORBIDDEN);
+        ResponseHelper.error('Không có quyền truy cập!', HttpStatus.FORBIDDEN);
       }
 
       const maPhim = parseInt(themPhimUploadHinhReqDto.maPhim);

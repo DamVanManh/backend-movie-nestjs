@@ -200,7 +200,7 @@ export class NguoiDungService {
   ): Promise<ApiResponse<NguoiDung | null>> {
     try {
       if (maLoaiNguoiDungToken !== MaLoaiNguoiDung.QuanTri) {
-        ResponseHelper.error(undefined, HttpStatus.FORBIDDEN);
+        ResponseHelper.error('Không có quyền truy cập!', HttpStatus.FORBIDDEN);
       }
       const { taiKhoan, email, matKhau, soDt, maLoaiNguoiDung, hoTen } = body;
       let check = await this.prismaService.nguoiDung.findFirst({
@@ -308,7 +308,7 @@ export class NguoiDungService {
   ): Promise<ApiResponse<string | null>> {
     try {
       if (maLoaiNguoiDungToken !== MaLoaiNguoiDung.QuanTri) {
-        ResponseHelper.error(undefined, HttpStatus.FORBIDDEN);
+        ResponseHelper.error('Không có quyền truy cập!', HttpStatus.FORBIDDEN);
       }
 
       let check = await this.prismaService.nguoiDung.findFirst({
