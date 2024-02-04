@@ -28,7 +28,6 @@ model CumRap {
 }
 
 model DatVe {
-  id          Int       @id @default(autoincrement())
   taiKhoan    String    @db.VarChar(255)
   maLichChieu Int
   maGhe       Int
@@ -36,9 +35,9 @@ model DatVe {
   LichChieu   LichChieu @relation(fields: [maLichChieu], references: [maLichChieu], onDelete: NoAction, onUpdate: NoAction, map: "DatVe_ibfk_2")
   Ghe         Ghe       @relation(fields: [maGhe], references: [maGhe], onDelete: NoAction, onUpdate: NoAction, map: "DatVe_ibfk_3")
 
+  @@id([taiKhoan, maLichChieu, maGhe])
   @@index([maGhe], map: "maGhe")
   @@index([maLichChieu], map: "maLichChieu")
-  @@index([taiKhoan], map: "taiKhoan")
 }
 
 model Ghe {
@@ -69,8 +68,8 @@ model LichChieu {
   RapPhim      RapPhim? @relation(fields: [maRap], references: [maRap], onDelete: NoAction, onUpdate: NoAction, map: "LichChieu_ibfk_1")
   Phim         Phim?    @relation(fields: [maPhim], references: [maPhim], onDelete: NoAction, onUpdate: NoAction, map: "LichChieu_ibfk_2")
 
+  @@unique([maRap, maPhim, ngayGioChieu], map: "unique_constraint")
   @@index([maPhim], map: "maPhim")
-  @@index([maRap], map: "maRap")
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.

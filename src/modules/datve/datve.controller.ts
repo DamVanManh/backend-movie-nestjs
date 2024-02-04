@@ -7,11 +7,18 @@ import {
   Post,
   UseGuards,
   Req,
+  Get,
+  Query,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { ApiResponse } from 'src/common/dtos/response.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
-import { DatveDto, TaoLichChieuReqDto } from './dto/datve.dto';
+import {
+  DatveDto,
+  LayDanhSachPhongVeResDto,
+  TaoLichChieuReqDto,
+} from './dto/datve.dto';
 
 @Controller('QuanLyDatVe')
 export class DatveController {
@@ -40,5 +47,13 @@ export class DatveController {
       taoLichChieuReqDto,
       maLoaiNguoiDungToken,
     );
+  }
+
+  @HttpCode(200)
+  @Get('LayDanhSachPhongVe')
+  async layDanhSachPhongVe(
+    @Query('maLichChieu', ParseIntPipe) maLichChieu: number,
+  ): Promise<ApiResponse<LayDanhSachPhongVeResDto | null>> {
+    return await this.datveService.layDanhSachPhongVe(maLichChieu);
   }
 }

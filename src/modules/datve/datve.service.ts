@@ -1,7 +1,11 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { ApiResponse } from 'src/common/dtos/response.dto';
 import { PrismaService } from 'src/database/prisma.service';
-import { DatveDto, TaoLichChieuReqDto } from './dto/datve.dto';
+import {
+  DatveDto,
+  LayDanhSachPhongVeResDto,
+  TaoLichChieuReqDto,
+} from './dto/datve.dto';
 import { ResponseHelper } from 'src/common/helpers/response.helper';
 import { MaLoaiNguoiDung } from '../nguoidung/dto/maloainguoidung.dto';
 
@@ -72,6 +76,80 @@ export class DatveService {
         data: newLichChieu,
       });
       return ResponseHelper.success('Thêm lịch chiếu thành công!');
+    } catch (error) {
+      if (error?.status && error?.status != 500)
+        ResponseHelper.error(error.message, error.status);
+      ResponseHelper.internalError();
+    }
+  }
+
+  async layDanhSachPhongVe(
+    maLichChieu: number,
+  ): Promise<ApiResponse<LayDanhSachPhongVeResDto | null>> {
+    try {
+      let check = await this.prismaService.lichChieu.findFirst({
+        where: {
+          maLichChieu,
+        },
+      });
+      if (!check) {
+        ResponseHelper.error(
+          'Mã lịch chiếu không tồn tại!',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      let data = await this.prismaService.lichChieu.findFirst({
+        where: {
+          maLichChieu,
+        },
+        include: {
+          Phim: {
+            where: {
+              maPhim: check.maPhim,
+            },
+          },
+          DatVe: {
+            where: {
+              maLichChieu: check.maLichChieu,
+            },
+          },
+          RapPhim: {
+            where: {
+              maRap: check.maRap,
+            },
+            include: {
+              Ghe: {
+                where: {
+                  maRap: check.maRap,
+                },
+              },
+              CumRap: true,
+            },
+          },
+        },
+      });
+
+      let result = {
+        thongTinPhim: {
+          maLichChieu: data?.maLichChieu,
+          tenCumRap: data?.RapPhim?.CumRap?.tenCumRap,
+          tenRap: data?.RapPhim?.tenRap,
+          diaChi: data?.RapPhim?.CumRap?.diaChi,
+          tenPhim: data?.Phim?.tenPhim,
+          hinhAnh: data?.Phim?.hinhAnh,
+          ngayGioChieu: data?.ngayGioChieu,
+        },
+        danhSachGhe: data?.RapPhim?.Ghe?.map((g) => ({
+          ...g,
+          giaVe: data?.giaVe,
+          daDat: data?.DatVe?.map((dv) => dv.maGhe)?.includes(g.maGhe),
+          taiKhoanNguoiDat: data?.DatVe?.find((dv) => dv?.maGhe === g.maGhe)
+            ? data?.DatVe?.find((dv) => dv?.maGhe === g.maGhe).taiKhoan
+            : null,
+        })),
+      };
+      return ResponseHelper.success(result);
     } catch (error) {
       if (error?.status && error?.status != 500)
         ResponseHelper.error(error.message, error.status);
