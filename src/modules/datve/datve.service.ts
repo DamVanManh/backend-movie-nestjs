@@ -18,6 +18,23 @@ export class DatveService {
     taiKhoan: string,
   ): Promise<ApiResponse<string | null>> {
     try {
+      let check = await this.prismaService.datVe.findFirst({
+        where: {
+          AND: [
+            { taiKhoan },
+            { maLichChieu: datveDto.maLichChieu },
+            { maGhe: { in: datveDto.danhSachMaGhe } },
+          ],
+        },
+      });
+
+      if (check) {
+        ResponseHelper.error(
+          'Người dùng này đã đặt ghế này trước đó, vui lòng chọn ghế khác',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
       let datVes = datveDto.danhSachMaGhe.map((maGhe) => ({
         taiKhoan,
         maLichChieu: datveDto.maLichChieu,
